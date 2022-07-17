@@ -29,7 +29,8 @@ db_drop_and_create_all()
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['GET'])
-def getDrinks():
+@requires_auth(permission='get:drinks')
+def getDrinks(payload):
     try:
         data = []
         { data.append(d.short()) for d in Drink.query.all()}
@@ -41,8 +42,6 @@ def getDrinks():
 
     except:
         abort(400)
-    finally:
-        print("Drinks : ", data)
 
 '''
 @TODO implement endpoint
@@ -54,7 +53,8 @@ def getDrinks():
 '''
 
 @app.route('/drinks-detail', methods=['GET'])
-def getDrinksDetailed():
+@requires_auth(permission='get:drinks-detail')
+def getDrinksDetailed(payload):
     try:
         data = []
         { data.append(d.long()) for d in Drink.query.all()}
@@ -66,8 +66,6 @@ def getDrinksDetailed():
 
     except:
         abort(400)
-    finally:
-        print("Drinks : ", data)
 
 '''
 @TODO implement endpoint
@@ -88,7 +86,8 @@ def getDrinkByBody(drink):
         return None
 
 @app.route('/drinks', methods=['POST'])
-def postDrinks():
+@requires_auth(permission='post:drinks')
+def postDrinks(payload):
     try:
         data = request.get_json()
         if data.get('title'):
@@ -127,7 +126,8 @@ def postDrinks():
 '''
 
 @app.route('/drinks/<int:id>', methods=['PATCH'])
-def patchDrinks(id):
+@requires_auth(permission='patch:drinks')
+def patchDrinks(payload, id):
     try:
         data = request.get_json()
         print("\nData : ", data)
@@ -178,14 +178,15 @@ def patchDrinks(id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['DELETE'])
-def deleteDrinks(id):
+@requires_auth(permission='delete:drinks')
+def deleteDrinks(payload, id):
     try:
         drink = Drink.query.get_or_404(id)
         if drink:
             drink.delete()
             return jsonify({"success": True, "delete": id}), 200
     except:
-        return jsonify({"success": False, "message": "Error occurred performing request"}), 400
+        return jsonify({"success": False, "message": "Drink does not exist"}), 404
 
 # Error Handling
 '''

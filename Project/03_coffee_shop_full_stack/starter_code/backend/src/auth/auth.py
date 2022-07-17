@@ -73,7 +73,14 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    return True
+    data = payload.get("permissions")
+    print("Permission : ", permission, "\nToken Permissions: ", payload.get("permissions"))
+    if(permission not in data):
+        raise AuthError({
+                    'code': 'Unauthorized',
+                    'description': 'User does not have permission to perform request.'
+                    }, 401)
+    print("Request authorized")
     # raise Exception('Not Implemented')
 
 '''
