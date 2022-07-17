@@ -28,6 +28,10 @@ db_drop_and_create_all()
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
+
+'''
+    https://catalocke.us.auth0.com/authorize?audience=coffee_shop&response_type=token&client_id=OZixt91YeObntRxQ3WeGcGkWg2PBNLP6&redirect_uri=http://localhost:8100
+'''
 @app.route('/drinks', methods=['GET'])
 @requires_auth(permission='get:drinks')
 def getDrinks(payload):
@@ -91,18 +95,17 @@ def postDrinks(payload):
     try:
         data = request.get_json()
         if data.get('title'):
+            check_title = Drink.query.filter(Drink.title == data.get('title')).count()
+            if check_title != 0:
+                return jsonify({"message": "Drink title already exist",
+                "success" : False}), 400
+
             drink = Drink(
                 title = data.get('title'), 
                 recipe = json.dumps(data.get('recipe'))
             )
             drink.insert()
             print("Data : ", data , "\nRecipe : ", data.get('recipe'))
-            # response = drink
-            # if response is None:
-            #     return jsonify({"message": "Could not fetch drink after saving",
-            #     "success" : True}), 200
-            # else:
-            # print("New Drink : ", getDrinkByBody(drink))
 
             return jsonify({"drinks": [drink.long()],
             "success" : True}), 200
@@ -138,9 +141,13 @@ def patchDrinks(payload, id):
         print("Drink : ", drink, "\nData : ")
         if (data.get('title')):
             if(data.get('title') is not None):
+                check_title = Drink.query.filter(Drink.title == data.get('title')).count()
+                if check_title != 0:
+                    return jsonify({"message": "Drink title already exist",
+                    "success" : False}), 400
                 print("inside title")
                 drink.title = data.get('title')
-            
+                
         if (data.get('recipe') is not None):
             print("inside drink recipe: ", drink.recipe)
 
@@ -236,4 +243,4 @@ def authError(error):
         "success": False,
         "error": 401,
         "message": "Unauthorized request"
-    }), 422
+    }), 401
