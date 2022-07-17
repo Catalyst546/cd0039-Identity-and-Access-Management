@@ -30,7 +30,7 @@ export class AuthService {
     link += 'redirect_uri=' + this.callbackURL + callbackPath;
     return link;
   }
-  // https://catalocke.us.auth0.com/authorize?audience=coffee_shop&response_type=token&client_id=OZixt91YeObntRxQ3WeGcGkWg2PBNLP6&redirect_uri=http://localhost:8100
+  // https://catalocke.us.auth0.com/authorize?audience=coffee_shop&response_type=token&client_id=OZixt91YeObntRxQ3WeGcGkWg2PBNLP6&redirect_uri=http://localhost:8100/tabs/user-page
   // invoked in app.component on load
   check_token_fragment() {
     // parse the fragment
